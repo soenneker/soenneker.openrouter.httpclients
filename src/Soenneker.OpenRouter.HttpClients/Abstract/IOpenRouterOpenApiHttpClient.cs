@@ -6,14 +6,14 @@ using System.Threading;
 namespace Soenneker.OpenRouter.HttpClients.Abstract;
 
 /// <summary>
-/// A .NET thread-safe singleton HttpClient for 
+/// Provides a cached HTTP client configured for the OpenRouter API.
 /// </summary>
-public interface IOpenRouterOpenApiHttpClient: IDisposable, IAsyncDisposable
+public interface IOpenRouterOpenApiHttpClient : IDisposable, IAsyncDisposable
 {
     /// <summary>
-    /// Gets the value.
+    /// Gets the configured HTTP client, creating it on the first call.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task containing the result of the operation.</returns>
+    /// <returns>The configured HTTP client.</returns>
     ValueTask<HttpClient> Get(CancellationToken cancellationToken = default);
 }

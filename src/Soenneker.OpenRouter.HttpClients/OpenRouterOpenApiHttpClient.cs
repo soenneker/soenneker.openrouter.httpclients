@@ -11,11 +11,11 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.OpenRouter.HttpClients;
 
-///<inheritdoc cref="IOpenRouterOpenApiHttpClient"/>
 public sealed class OpenRouterOpenApiHttpClient : IOpenRouterOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
     private readonly IConfiguration _config;
+    private readonly string _clientId = $"{nameof(OpenRouterOpenApiHttpClient)}:{Guid.NewGuid():N}";
 
     private const string _prodBaseUrl = "https://openrouter.ai/api/v1";
 
@@ -27,11 +27,11 @@ public sealed class OpenRouterOpenApiHttpClient : IOpenRouterOpenApiHttpClient
 
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(nameof(OpenRouterOpenApiHttpClient), (config: _config, baseUrl: _config["OpenRouter:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
+        return _httpClientCache.Get(_clientId, (config: _config, baseUrl: _config["OpenRouter:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
             var apiKey = state.config.GetValueStrict<string>("OpenRouter:ApiKey");
-            string authHeaderName = state.config["OpenRouter:AuthHeaderName"] ?? "Bearer {token}";
-            string authHeaderValueTemplate = state.config["OpenRouter:AuthHeaderValueTemplate"] ?? "{token}";
+            string authHeaderName = state.config["OpenRouter:AuthHeaderName"] ?? "Authorization";
+            string authHeaderValueTemplate = state.config["OpenRouter:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
 
             return new HttpClientOptions
@@ -45,20 +45,13 @@ public sealed class OpenRouterOpenApiHttpClient : IOpenRouterOpenApiHttpClient
         }, cancellationToken);
     }
 
-    /// <summary>
-    /// Releases resources used by the current instance.
-    /// </summary>
     public void Dispose()
     {
-        _httpClientCache.RemoveSync(nameof(OpenRouterOpenApiHttpClient));
+        _httpClientCache.RemoveSync(_clientId);
     }
 
-    /// <summary>
-    /// Asynchronously releases resources used by the current instance.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
-        return _httpClientCache.Remove(nameof(OpenRouterOpenApiHttpClient));
+        return _httpClientCache.Remove(_clientId);
     }
 }
