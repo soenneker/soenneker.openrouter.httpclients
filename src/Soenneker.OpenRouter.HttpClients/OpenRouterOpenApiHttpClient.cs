@@ -11,6 +11,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.OpenRouter.HttpClients;
 
+/// <inheritdoc cref="IOpenRouterOpenApiHttpClient" />
 public sealed class OpenRouterOpenApiHttpClient : IOpenRouterOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
