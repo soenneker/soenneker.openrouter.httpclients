@@ -30,7 +30,7 @@ public sealed class OpenRouterOpenApiHttpClient : IOpenRouterOpenApiHttpClient
     {
         return _httpClientCache.Get(_clientId, (config: _config, baseUrl: _config["OpenRouter:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
-            var apiKey = state.config.GetValueStrict<string>("OpenRouter:ApiKey");
+            var apiKey = state.config.GetStringStrict("OpenRouter:ApiKey");
             string authHeaderName = state.config["OpenRouter:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["OpenRouter:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
